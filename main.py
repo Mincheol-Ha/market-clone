@@ -37,12 +37,8 @@ def login(id:Annotated[str, Form()],
         raise InvalidCredentialsException
     
     access_token = manager.create_access_token(data={
-        'sub': {
-            'id' : user['id'],
-            'name' : user['name'],
-            'email' : user['email']
-        }
-    })
+    'sub': user['id']  # 문자열로만!
+})
     
     return {'access_token':access_token}
 
@@ -77,7 +73,8 @@ async def create_item(image:UploadFile,
                 price:Annotated[int, Form()], 
                 description:Annotated[str, Form()],
                 place:Annotated[str, Form()],
-                insertAt:Annotated[int, Form()]
+                insertAt:Annotated[int, Form()],
+                user=Depends(manager)
                 ):
     image_bytes = await image.read()
     cur.execute(f"""

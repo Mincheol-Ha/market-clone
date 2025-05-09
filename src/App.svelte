@@ -28,11 +28,17 @@
       return;
     }
 
-    const credential = GoogleAuthProvider.credential(null, token);
-    const result = await signInWithCredential(auth, credential);
-    const user = result.user;
-    user$.set(user);
-    isLoading = false;
+    try {
+      const credential = GoogleAuthProvider.credential(null, token);
+      const result = await signInWithCredential(auth, credential);
+      const user = result.user;
+      user$.set(user);
+    } catch (err) {
+      console.error("로그인 실패:", err);
+      localStorage.removeItem("token"); // 잘못된 토큰 제거
+    } finally {
+      isLoading = false; // 무조건 로딩 종료
+    }
   };
 
   const routes = {
